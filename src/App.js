@@ -16,6 +16,7 @@ function App() {
 const [state,setState] = React.useState(null);
 const [coordinates,setCoordinates] = React.useState({lat:'',lon:''});
 const [hourlyForecast,setHourlyForecast] = React.useState(null);
+const [peshawarState,setPeshawarState] = React.useState(null);
 
 React.useEffect(() => {
   fetch(`https://api.openweathermap.org/data/2.5/weather?q=Karachi&appid=${apiKey}`)
@@ -26,18 +27,27 @@ React.useEffect(() => {
     })
     .catch(error => console.error('Error fetching weather data:', error));  
 
+
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=Peshawar&appid=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+      setPeshawarState(data)
+    })
+    .catch(error => console.error('Error fetching weather data:', error));  
+
+
 }, []);
 
 
 
   return (
   <div className="app">
-  
-    <div className="card">
-      <div className="search-box">
+  <div className="search-box">
         <input type="text" placeholder="Search city or ZIP" />
         <button>Go</button>
       </div>
+    <div className="card">
+      
       <div className="weather-main">
         <img src={`https://openweathermap.org/img/wn/${state?.weather[0]?.icon}.png`} alt="weather icon"/>
         <div>
@@ -60,7 +70,33 @@ React.useEffect(() => {
       </div>
     </div>
 
-    
+
+<div className="card">
+      <div className="weather-main">
+        <img src={`https://openweathermap.org/img/wn/${peshawarState?.weather[0]?.icon}.png`} alt="weather icon"/>
+        <div>
+          <div className="temp">{kelvinToCelsius(peshawarState?.main?.temp)}°C</div>
+          <div>{peshawarState?.weather[0]?.main}</div>
+          <div style={styles}>{peshawarState?.weather[0]?.description}</div>
+          <div style={styles}>{peshawarState?.name}</div>
+        </div>
+      </div>
+      <div className="info-grid">
+        <div>
+          <strong>Feels</strong><br/>{kelvinToCelsius(peshawarState?.main?.feels_like)}°C
+        </div>
+        <div>
+          <strong>Wind</strong><br/>{peshawarState?.wind?.speed} km/h
+        </div>
+        <div>
+          <strong>Humidity</strong><br/>64%
+        </div>
+      </div>
+    </div>
+
+
+
+{/*     
     <div className="card">
       <h3>Hourly Forecast</h3>
       <div className="forecast">
@@ -77,7 +113,7 @@ React.useEffect(() => {
         <li><span>Sun</span> <span>29° / 25°</span></li>
         <li><span>Mon</span> <span>34° / 26°</span></li>
       </ul>
-    </div>
+    </div> */}
   </div>
 
 
