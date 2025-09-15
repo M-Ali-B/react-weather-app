@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import { kelvinToCelsius } from './Util';
+import { kelvinToCelsius , ForecastProps} from './Util';
 const apiKey = process.env.REACT_APP_API_KEY;
 const styles = {
 fontSize: '0.9rem',
@@ -17,6 +17,7 @@ const [state,setState] = React.useState(null);
 const [coordinates,setCoordinates] = React.useState({lat:'',lon:''});
 const [hourlyForecast,setHourlyForecast] = React.useState(null);
 const [peshawarState,setPeshawarState] = React.useState(null);
+const [citiesForecast,setCitiesForecast] = React.useState([]);
 
 React.useEffect(() => {
   fetch(`https://api.openweathermap.org/data/2.5/weather?q=Karachi&appid=${apiKey}`)
@@ -24,6 +25,8 @@ React.useEffect(() => {
     .then(data => {
       setState(data)
       setCoordinates(data.coord)
+      citiesForecast.push(ForecastProps(data))
+      console.log(citiesForecast)
     })
     .catch(error => console.error('Error fetching weather data:', error));  
 
@@ -38,7 +41,32 @@ React.useEffect(() => {
 
 }, []);
 
+const showData = citiesForecast.map((city, index) => (
+  
+<div className="card">
+      <div key={index} className="weather-main">
+        <img src={`https://openweathermap.org/img/wn/${city.icon}.png`} alt="weather icon"/>
+        <div>
+          <div className="temp">{city.temp}°C</div>
+          <div>{city.main}</div>
+          <div style={styles}>{city.description}</div>
+          <div style={styles}>{city.name}</div>
+        </div>
+      </div>
+      <div className="info-grid">
+        <div>
+          <strong>Feels</strong><br/>{city.feels_like}°C
+        </div>
+        <div>
+          <strong>Wind</strong><br/>{city.speed} km/h
+        </div>
+        <div>
+          <strong>Humidity</strong><br/>64%
+        </div>
+      </div>
+    </div>
 
+));
 
   return (
   <div className="app">
@@ -46,54 +74,7 @@ React.useEffect(() => {
         <input type="text" placeholder="Search city or ZIP" />
         <button>Go</button>
       </div>
-    <div className="card">
-      
-      <div className="weather-main">
-        <img src={`https://openweathermap.org/img/wn/${state?.weather[0]?.icon}.png`} alt="weather icon"/>
-        <div>
-          <div className="temp">{kelvinToCelsius(state?.main?.temp)}°C</div>
-          <div>{state?.weather[0]?.main}</div>
-          <div style={styles}>{state?.weather[0]?.description}</div>
-          <div style={styles}>{state?.name}</div>
-        </div>
-      </div>
-      <div className="info-grid">
-        <div>
-          <strong>Feels</strong><br/>{kelvinToCelsius(state?.main?.feels_like)}°C
-        </div>
-        <div>
-          <strong>Wind</strong><br/>{state?.wind?.speed} km/h
-        </div>
-        <div>
-          <strong>Humidity</strong><br/>64%
-        </div>
-      </div>
-    </div>
-
-
-<div className="card">
-      <div className="weather-main">
-        <img src={`https://openweathermap.org/img/wn/${peshawarState?.weather[0]?.icon}.png`} alt="weather icon"/>
-        <div>
-          <div className="temp">{kelvinToCelsius(peshawarState?.main?.temp)}°C</div>
-          <div>{peshawarState?.weather[0]?.main}</div>
-          <div style={styles}>{peshawarState?.weather[0]?.description}</div>
-          <div style={styles}>{peshawarState?.name}</div>
-        </div>
-      </div>
-      <div className="info-grid">
-        <div>
-          <strong>Feels</strong><br/>{kelvinToCelsius(peshawarState?.main?.feels_like)}°C
-        </div>
-        <div>
-          <strong>Wind</strong><br/>{peshawarState?.wind?.speed} km/h
-        </div>
-        <div>
-          <strong>Humidity</strong><br/>64%
-        </div>
-      </div>
-    </div>
-
+  {showData}
 
 
 {/*     
