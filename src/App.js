@@ -34,7 +34,7 @@ React.useEffect(() => {
   fetch(`https://api.openweathermap.org/data/2.5/weather?q=Peshawar&appid=${apiKey}`)
     .then(response => response.json())
     .then(data => {
-      setPeshawarState(data)
+      citiesForecast.push(ForecastProps(data))
     })
     .catch(error => console.error('Error fetching weather data:', error));  
 
