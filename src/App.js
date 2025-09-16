@@ -18,6 +18,7 @@ const [coordinates,setCoordinates] = React.useState({lat:'',lon:''});
 const [hourlyForecast,setHourlyForecast] = React.useState(null);
 const [peshawarState,setPeshawarState] = React.useState(null);
 const [citiesForecast,setCitiesForecast] = React.useState([]);
+const [city,setCity] = React.useState('');
 
 React.useEffect(() => {
   fetch(`https://api.openweathermap.org/data/2.5/weather?q=Karachi&appid=${apiKey}`)
@@ -40,6 +41,17 @@ React.useEffect(() => {
 
 
 }, []);
+
+const fetchCityWeather = () => {
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+      citiesForecast.push(ForecastProps(data))
+      setCity('')
+      console.log(citiesForecast)
+    })
+    .catch(error => console.error('Error fetching weather data:', error));  
+}
 
 const showData = citiesForecast.map((city, index) => (
   
@@ -68,11 +80,15 @@ const showData = citiesForecast.map((city, index) => (
 
 ));
 
+const handleChange = (e) => {
+    setCity(e.target.value); // update state
+  };
+
   return (
   <div className="app">
   <div className="search-box">
-        <input type="text" placeholder="Search city or ZIP" />
-        <button>Go</button>
+        <input type="text" value={city} onChange={handleChange} placeholder="Search city or ZIP" />
+        <button onClick={fetchCityWeather}>Go</button>
       </div>
   {showData}
 
